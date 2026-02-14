@@ -1,15 +1,35 @@
 import re
 import textwrap
+from contextlib import asynccontextmanager
 from typing import List, Optional
 
-from fastapi import FastAPI, HTTPException, Header, Request
+from fastapi import FastAPI, HTTPException, Header, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-app = FastAPI(title="Content Repurposer API", version="1.0.0")
+# Import auth and database modules
+import database
+import auth
+
+# Lifespan context manager for startup/shutdown
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Initialize database
+    await database.init_database()
+    print("✓ Database initialized")
+    yield
+    # Shutdown
+    print("✓ Shutting down")
+
+app = FastAPI(
+    title="Content Repurposer API",
+    version="2.0.0",
+    description="Transform content into multiple formats for different platforms",
+    lifespan=lifespan
+)
 
 # CORS
 app.add_middleware(
@@ -20,17 +40,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add custom middleware
+app.middleware("http")(auth.rate_limit_middleware)
+app.middleware("http")(auth.log_request_middleware)
+
 # Templates and static files
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-API_KEY = "demo-key-2024"
 
 SUPPORTED_FORMATS = [
     {"id": "twitter", "name": "Twitter / X Thread", "description": "280-char tweets optimized for engagement"},
     {"id": "linkedin", "name": "LinkedIn Post", "description": "Professional post with emojis and hashtags"},
     {"id": "email", "name": "Email Newsletter", "description": "Newsletter-ready email format"},
     {"id": "summary", "name": "Executive Summary", "description": "Concise summary for decision makers"},
+    {"id": "instagram", "name": "Instagram Caption", "description": "Caption with emojis and 30 hashtags"},
+    {"id": "youtube_description", "name": "YouTube Description", "description": "SEO-optimized video description"},
+    {"id": "blog_outline", "name": "Blog Outline", "description": "H2/H3 structured outline"},
+    {"id": "podcast_script", "name": "Podcast Script", "description": "Conversational script format"},
 ]
 
 
@@ -50,11 +76,6 @@ class HeadlineVariantsRequest(BaseModel):
 
 
 # --- Helpers ---
-
-def verify_api_key(x_api_key: Optional[str] = None):
-    if x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid or missing API key")
-
 
 def extract_sentences(text: str) -> List[str]:
     """Split text into sentences."""
@@ -253,6 +274,10 @@ FORMAT_HANDLERS = {
     "linkedin": repurpose_linkedin,
     "email": repurpose_email,
     "summary": repurpose_summary,
+    "instagram": repurpose_to_instagram,
+    "youtube_description": repurpose_to_youtube_description,
+    "blog_outline": repurpose_to_blog_outline,
+    "podcast_script": repurpose_to_podcast_script,
 }
 
 
@@ -264,15 +289,12 @@ async def landing_page(request: Request):
 
 
 @app.get("/api/formats")
-async def get_formats(x_api_key: Optional[str] = Header(None)):
-    verify_api_key(x_api_key)
+async def get_formats(key_info: dict = Depends(auth.verify_api_key_dependency)):
     return {"formats": SUPPORTED_FORMATS}
 
 
 @app.post("/api/repurpose")
-async def repurpose_content(body: RepurposeRequest, x_api_key: Optional[str] = Header(None)):
-    verify_api_key(x_api_key)
-
+async def repurpose_content(body: RepurposeRequest, key_info: dict = Depends(auth.verify_api_key_dependency)):
     if not body.content.strip():
         raise HTTPException(status_code=400, detail="Content cannot be empty")
 
@@ -296,9 +318,7 @@ async def repurpose_content(body: RepurposeRequest, x_api_key: Optional[str] = H
 
 
 @app.post("/api/extract-points")
-async def extract_points(body: ExtractPointsRequest, x_api_key: Optional[str] = Header(None)):
-    verify_api_key(x_api_key)
-
+async def extract_points(body: ExtractPointsRequest, key_info: dict = Depends(auth.verify_api_key_dependency)):
     if not body.content.strip():
         raise HTTPException(status_code=400, detail="Content cannot be empty")
 
@@ -311,9 +331,7 @@ async def extract_points(body: ExtractPointsRequest, x_api_key: Optional[str] = 
 
 
 @app.post("/api/headline-variants")
-async def headline_variants(body: HeadlineVariantsRequest, x_api_key: Optional[str] = Header(None)):
-    verify_api_key(x_api_key)
-
+async def headline_variants(body: HeadlineVariantsRequest, key_info: dict = Depends(auth.verify_api_key_dependency)):
     headline = body.headline.strip()
     if not headline:
         raise HTTPException(status_code=400, detail="Headline cannot be empty")
@@ -447,10 +465,4 @@ def repurpose_to_podcast_script(content: str) -> dict:
 
 
 # Update SUPPORTED_FORMATS
-SUPPORTED_FORMATS.extend([
-    {"id": "instagram", "name": "Instagram Caption", "description": "Caption with emojis and 30 hashtags"},
-    {"id": "youtube_description", "name": "YouTube Description", "description": "SEO-optimized video description"},
-    {"id": "blog_outline", "name": "Blog Outline", "description": "H2/H3 structured outline"},
-    {"id": "podcast_script", "name": "Podcast Script", "description": "Conversational script format"}
-])
 
