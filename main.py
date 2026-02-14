@@ -355,3 +355,102 @@ async def headline_variants(body: HeadlineVariantsRequest, x_api_key: Optional[s
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8771)
+
+# Phase 2 enhancements: New content formats
+
+def repurpose_to_instagram(content: str) -> dict:
+    """Convert content to Instagram caption with emojis and hashtags."""
+    sentences = extract_sentences(content)[:3]
+    caption = " ".join(sentences)
+    
+    # Add emojis strategically
+    caption = "✨ " + caption
+    if len(caption) > 500:
+        caption = caption[:500] + "..."
+    
+    # Generate 30 relevant hashtags
+    words = re.findall(r'\b[A-Za-z]{4,}\b', content.lower())
+    hashtags = list(set(words))[:30]
+    hashtag_string = " ".join([f"#{tag}" for tag in hashtags])
+    
+    return {
+        "format": "instagram",
+        "caption": caption,
+        "hashtags": hashtag_string,
+        "character_count": len(caption)
+    }
+
+
+def repurpose_to_youtube_description(content: str) -> dict:
+    """Create SEO-optimized YouTube video description."""
+    sentences = extract_sentences(content)
+    intro = sentences[0] if sentences else "Check out this content!"
+    
+    description = f"{intro}\n\n"
+    description += "📌 What you'll learn:\n"
+    
+    key_points = extract_key_points(content)[:5]
+    for i, point in enumerate(key_points, 1):
+        description += f"{i}. {point[:80]}\n"
+    
+    description += "\n🔔 Subscribe for more content!\n"
+    description += "\n#youtube #content #learning"
+    
+    return {
+        "format": "youtube_description",
+        "description": description,
+        "word_count": len(description.split())
+    }
+
+
+def repurpose_to_blog_outline(content: str) -> dict:
+    """Generate H2/H3 blog outline structure."""
+    points = extract_key_points(content)
+    
+    outline = "# Main Title\n\n"
+    outline += "## Introduction\n\n"
+    
+    for i, point in enumerate(points, 1):
+        outline += f"## Section {i}: {point[:50]}...\n"
+        outline += f"### Subsection {i}.1\n"
+        outline += f"### Subsection {i}.2\n\n"
+    
+    outline += "## Conclusion\n\n"
+    outline += "## Call to Action\n"
+    
+    return {
+        "format": "blog_outline",
+        "outline": outline,
+        "sections": len(points) + 2
+    }
+
+
+def repurpose_to_podcast_script(content: str) -> dict:
+    """Convert to conversational podcast script."""
+    sentences = extract_sentences(content)
+    
+    script = "[INTRO MUSIC]\n\n"
+    script += "Host: Welcome back to the podcast! Today we're diving into an amazing topic.\n\n"
+    script += f"Host: {sentences[0] if sentences else 'Great content today.'}\n\n"
+    
+    for i, sentence in enumerate(sentences[1:4], 1):
+        script += f"Host: Point {i}: {sentence}\n\n"
+    
+    script += "Host: Let me know what you think in the comments!\n\n"
+    script += "[OUTRO MUSIC]\n"
+    
+    return {
+        "format": "podcast_script",
+        "script": script,
+        "estimated_duration": "3-5 minutes"
+    }
+
+
+# Update SUPPORTED_FORMATS
+SUPPORTED_FORMATS.extend([
+    {"id": "instagram", "name": "Instagram Caption", "description": "Caption with emojis and 30 hashtags"},
+    {"id": "youtube_description", "name": "YouTube Description", "description": "SEO-optimized video description"},
+    {"id": "blog_outline", "name": "Blog Outline", "description": "H2/H3 structured outline"},
+    {"id": "podcast_script", "name": "Podcast Script", "description": "Conversational script format"}
+])
+
