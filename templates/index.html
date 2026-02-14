@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ContentRepurposer - Turn One Piece of Content Into 10</title>
+    <style>
+        :root {
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2332;
+            --bg-card-hover: #1f2b3d;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #10b981;
+            --accent-light: #34d399;
+            --accent-dark: #059669;
+            --accent-glow: rgba(16, 185, 129, 0.15);
+            --teal: #14b8a6;
+            --border: #1e293b;
+            --border-light: #334155;
+            --gradient-start: #10b981;
+            --gradient-end: #0ea5e9;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 15, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-light);
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: #fff !important;
+            padding: 0.55rem 1.4rem;
+            border-radius: 50px;
+            font-weight: 600 !important;
+            transition: var(--transition);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 160px 2rem 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--accent-glow);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-light);
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.2rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1.2rem;
+            letter-spacing: -1px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 620px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+            background: var(--accent-glow);
+        }
+
+        /* Section shared */
+        .section {
+            padding: 100px 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            display: inline-block;
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-center .section-subtitle {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 80px 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .demo-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .demo-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-card .demo-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: var(--transition);
+            line-height: 1.6;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .format-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .format-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            padding: 0.55rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            user-select: none;
+        }
+
+        .format-checkbox:hover {
+            border-color: var(--accent);
+        }
+
+        .format-checkbox input {
+            accent-color: var(--accent);
+            width: 16px;
+            height: 16px;
+        }
+
+        .format-checkbox.checked {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent-light);
+        }
+
+        .btn-demo {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.05rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Results */
+        .results-area {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .results-area.visible {
+            display: block;
+        }
+
+        .result-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .result-tab {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .result-tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .result-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .result-content {
+            display: none;
+        }
+
+        .result-content.active {
+            display: block;
+        }
+
+        .result-output {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1.25rem;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-output::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .result-output::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        .result-output::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 3px;
+        }
+
+        .copy-btn {
+            margin-top: 0.75rem;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-light);
+            box-shadow: var(--shadow);
+            background: var(--bg-card-hover);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-glow);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 1.2rem;
+            color: var(--accent);
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* How it works */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            counter-reset: step;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0 auto 1.2rem;
+            color: #fff;
+        }
+
+        .step-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+        }
+
+        .step-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Pricing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--accent);
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, var(--bg-card) 100%);
+            transform: scale(1.03);
+        }
+
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: #fff;
+            padding: 0.3rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.03) translateY(-4px);
+        }
+
+        .pricing-tier {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            letter-spacing: -1px;
+        }
+
+        .pricing-price span {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .pricing-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .pricing-features li::before {
+            content: '';
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            background: var(--accent-glow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .pricing-btn {
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-light);
+        }
+
+        /* Error message */
+        .error-msg {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .nav-links .hide-mobile {
+                display: none;
+            }
+
+            .hero {
+                padding: 130px 1.5rem 60px;
+            }
+
+            .demo-card {
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 60px 1.5rem;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .pricing-card.featured:hover {
+                transform: translateY(-4px);
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <a href="#" class="nav-logo">ContentRepurposer</a>
+    <ul class="nav-links">
+        <li><a href="#demo" class="hide-mobile">Demo</a></li>
+        <li><a href="#features" class="hide-mobile">Features</a></li>
+        <li><a href="#pricing" class="hide-mobile">Pricing</a></li>
+        <li><a href="#pricing" class="nav-cta">Get Started</a></li>
+    </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-badge">Content Multiplication Engine</div>
+    <h1>Turn One Piece of Content <br>Into <span>10</span></h1>
+    <p>Stop spending hours rewriting. Paste your blog post, article, or any long-form content and instantly get Twitter threads, LinkedIn posts, email newsletters, and executive summaries.</p>
+    <div class="hero-cta-group">
+        <a href="#demo" class="btn btn-primary">Try Live Demo</a>
+        <a href="#pricing" class="btn btn-outline">View Pricing</a>
+    </div>
+</section>
+
+<!-- Demo Section -->
+<section class="demo-section" id="demo">
+    <div class="demo-card">
+        <h3>Live Demo</h3>
+        <p class="demo-desc">Paste any content below and select your output formats. Uses demo API key.</p>
+
+        <div class="form-group">
+            <label for="content-input">Your Content</label>
+            <textarea id="content-input" placeholder="Paste your blog post, article, or any long-form content here..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Output Formats</label>
+            <div class="format-checkboxes">
+                <label class="format-checkbox checked">
+                    <input type="checkbox" name="format" value="twitter" checked> Twitter Thread
+                </label>
+                <label class="format-checkbox checked">
+                    <input type="checkbox" name="format" value="linkedin" checked> LinkedIn Post
+                </label>
+                <label class="format-checkbox">
+                    <input type="checkbox" name="format" value="email"> Email Newsletter
+                </label>
+                <label class="format-checkbox">
+                    <input type="checkbox" name="format" value="summary"> Executive Summary
+                </label>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-demo" id="repurpose-btn" onclick="handleRepurpose()">
+            Repurpose Content
+        </button>
+
+        <div class="error-msg" id="error-msg"></div>
+
+        <div class="results-area" id="results-area">
+            <div class="result-tabs" id="result-tabs"></div>
+            <div id="result-panels"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="section text-center" id="features">
+    <span class="section-label">Features</span>
+    <h2 class="section-title">Everything You Need to Scale Content</h2>
+    <p class="section-subtitle">Powerful tools designed for content creators, marketers, and agencies who want to maximize every piece of content.</p>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </div>
+            <h3>Multi-Format Output</h3>
+            <p>Transform any content into Twitter threads, LinkedIn posts, email newsletters, and executive summaries in seconds.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </div>
+            <h3>Key Point Extraction</h3>
+            <p>Automatically pull out the most important points from your content. Perfect for creating quick reference guides and highlight reels.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <h3>Headline Generator</h3>
+            <p>Generate 5 headline variations instantly: question-based, how-to, listicle, emotional, and data-driven formats.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <h3>API Access</h3>
+            <p>Integrate content repurposing into your existing workflows with our simple REST API. Full documentation included.</p>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section text-center" id="how-it-works">
+    <span class="section-label">How It Works</span>
+    <h2 class="section-title">Three Steps to Content Freedom</h2>
+    <p class="section-subtitle">Go from one piece of content to a full multi-channel strategy in under a minute.</p>
+
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Paste Your Content</h3>
+            <p>Drop in any blog post, article, video transcript, or long-form content. No formatting needed.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Choose Your Formats</h3>
+            <p>Select which output formats you need: Twitter, LinkedIn, email, summaries, or all of them at once.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Copy and Publish</h3>
+            <p>Get instant results formatted and ready to publish. Copy with one click and paste into your platform.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section class="section text-center" id="pricing">
+    <span class="section-label">Pricing</span>
+    <h2 class="section-title">Simple, Transparent Pricing</h2>
+    <p class="section-subtitle">Start free with our demo. Scale up as your content needs grow.</p>
+
+    <div class="pricing-grid">
+        <!-- Creator -->
+        <div class="pricing-card">
+            <div class="pricing-tier">Creator</div>
+            <div class="pricing-price">$19<span>/mo</span></div>
+            <p class="pricing-desc">Perfect for individual content creators</p>
+            <ul class="pricing-features">
+                <li>50 repurposes per month</li>
+                <li>All 4 output formats</li>
+                <li>Key point extraction</li>
+                <li>Headline generator</li>
+                <li>API access</li>
+            </ul>
+            <a href="https://gumroad.com/l/repurposer-creator" class="btn btn-outline pricing-btn" target="_blank">Get Creator</a>
+        </div>
+
+        <!-- Agency -->
+        <div class="pricing-card featured">
+            <div class="pricing-tier">Agency</div>
+            <div class="pricing-price">$49<span>/mo</span></div>
+            <p class="pricing-desc">Built for teams and marketing agencies</p>
+            <ul class="pricing-features">
+                <li>500 repurposes per month</li>
+                <li>All 4 output formats</li>
+                <li>Key point extraction</li>
+                <li>Headline generator</li>
+                <li>Priority API access</li>
+                <li>Email support</li>
+            </ul>
+            <a href="https://gumroad.com/l/repurposer-agency" class="btn btn-primary pricing-btn" target="_blank">Get Agency</a>
+        </div>
+
+        <!-- Unlimited -->
+        <div class="pricing-card">
+            <div class="pricing-tier">Unlimited</div>
+            <div class="pricing-price">$99<span>/mo</span></div>
+            <p class="pricing-desc">For power users who need no limits</p>
+            <ul class="pricing-features">
+                <li>Unlimited repurposes</li>
+                <li>All 4 output formats</li>
+                <li>Key point extraction</li>
+                <li>Headline generator</li>
+                <li>Dedicated API access</li>
+                <li>Priority support</li>
+                <li>Custom format requests</li>
+            </ul>
+            <a href="https://gumroad.com/l/repurposer-unlimited" class="btn btn-outline pricing-btn" target="_blank">Get Unlimited</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-logo">ContentRepurposer</div>
+        <p class="footer-text">Multiply your content. Amplify your reach.</p>
+        <ul class="footer-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#demo">Demo</a></li>
+        </ul>
+    </div>
+</footer>
+
+<script>
+    // Format checkbox toggle styling
+    document.querySelectorAll('.format-checkbox input').forEach(cb => {
+        cb.addEventListener('change', function() {
+            this.closest('.format-checkbox').classList.toggle('checked', this.checked);
+        });
+    });
+
+    // Get selected formats
+    function getSelectedFormats() {
+        const checked = document.querySelectorAll('.format-checkbox input:checked');
+        return Array.from(checked).map(cb => cb.value);
+    }
+
+    // Show error
+    function showError(msg) {
+        const el = document.getElementById('error-msg');
+        el.textContent = msg;
+        el.classList.add('visible');
+        setTimeout(() => el.classList.remove('visible'), 5000);
+    }
+
+    // Handle repurpose
+    async function handleRepurpose() {
+        const content = document.getElementById('content-input').value.trim();
+        const formats = getSelectedFormats();
+        const btn = document.getElementById('repurpose-btn');
+        const resultsArea = document.getElementById('results-area');
+
+        // Validate
+        if (!content) {
+            showError('Please paste some content to repurpose.');
+            return;
+        }
+        if (formats.length === 0) {
+            showError('Please select at least one output format.');
+            return;
+        }
+
+        // Loading state
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Repurposing...';
+        resultsArea.classList.remove('visible');
+        document.getElementById('error-msg').classList.remove('visible');
+
+        try {
+            const response = await fetch('/api/repurpose', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': 'demo-key-2024'
+                },
+                body: JSON.stringify({ content, formats })
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || 'Something went wrong');
+            }
+
+            const data = await response.json();
+            renderResults(data.results);
+        } catch (err) {
+            showError(err.message || 'Failed to repurpose content. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Repurpose Content';
+        }
+    }
+
+    // Render tabbed results
+    function renderResults(results) {
+        const tabsContainer = document.getElementById('result-tabs');
+        const panelsContainer = document.getElementById('result-panels');
+        const resultsArea = document.getElementById('results-area');
+
+        tabsContainer.innerHTML = '';
+        panelsContainer.innerHTML = '';
+
+        const formatLabels = {
+            twitter: 'Twitter Thread',
+            linkedin: 'LinkedIn Post',
+            email: 'Email Newsletter',
+            summary: 'Executive Summary'
+        };
+
+        const keys = Object.keys(results);
+        if (keys.length === 0) return;
+
+        keys.forEach((key, index) => {
+            const result = results[key];
+            const label = result.label || formatLabels[key] || key;
+
+            // Create tab
+            const tab = document.createElement('button');
+            tab.className = 'result-tab' + (index === 0 ? ' active' : '');
+            tab.textContent = label;
+            tab.setAttribute('data-tab', key);
+            tab.onclick = () => switchTab(key);
+            tabsContainer.appendChild(tab);
+
+            // Create panel
+            const panel = document.createElement('div');
+            panel.className = 'result-content' + (index === 0 ? ' active' : '');
+            panel.id = 'panel-' + key;
+            panel.innerHTML = `
+                <div class="result-output">${escapeHtml(result.output)}</div>
+                <button class="copy-btn" onclick="copyResult('${key}')">Copy to Clipboard</button>
+            `;
+            panelsContainer.appendChild(panel);
+        });
+
+        resultsArea.classList.add('visible');
+        resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Switch tab
+    function switchTab(key) {
+        document.querySelectorAll('.result-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.result-content').forEach(p => p.classList.remove('active'));
+
+        document.querySelector(`.result-tab[data-tab="${key}"]`).classList.add('active');
+        document.getElementById('panel-' + key).classList.add('active');
+    }
+
+    // Copy result to clipboard
+    function copyResult(key) {
+        const panel = document.getElementById('panel-' + key);
+        const text = panel.querySelector('.result-output').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = panel.querySelector('.copy-btn');
+            const original = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.style.borderColor = 'var(--accent)';
+            btn.style.color = 'var(--accent-light)';
+            setTimeout(() => {
+                btn.textContent = original;
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            }, 2000);
+        });
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
+</body>
+</html>
